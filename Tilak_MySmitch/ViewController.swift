@@ -21,20 +21,20 @@ class ViewController: UIViewController,NetServiceDelegate,NetServiceBrowserDeleg
     @IBAction func publishAction(_ sender: Any) {
         
         
-        let servicePub = NetService.init(domain: "local", type: serviceType, name: "Tilak_Phone7", port: 80)
+        let servicePub = NetService.init(domain: "", type: serviceType, name: "Tilak_Phone7")
         servicePub.delegate = self
         servicePub.includesPeerToPeer = true
         servicePub.publish(options: .listenForConnections)
-        
+        servicePub.resolve(withTimeout: 3)
         
     }
     
     @IBAction func scanAction(_ sender: Any) {
         let serviceScn = NetServiceBrowser.init()
         serviceScn.delegate = self
-//        serviceScn.searchForServices(ofType: serviceType, inDomain: "local")
-        serviceScn.searchForBrowsableDomains()
-//        serviceScn.searchForRegistrationDomains()
+        serviceScn.searchForServices(ofType: self.serviceType, inDomain: "")
+      
+        RunLoop.current.run()
     }
     
     func netServiceDidPublish(_ sender: NetService) {
@@ -58,6 +58,7 @@ class ViewController: UIViewController,NetServiceDelegate,NetServiceBrowserDeleg
     
     func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
         print(service)
+//        let ipAdd = service.
     }
     
     func netServiceBrowser(_ browser: NetServiceBrowser, didRemoveDomain domainString: String, moreComing: Bool) {
@@ -74,6 +75,14 @@ class ViewController: UIViewController,NetServiceDelegate,NetServiceBrowserDeleg
     
     func netServiceBrowserDidStopSearch(_ browser: NetServiceBrowser) {
         
+    }
+    
+    func netServiceWillResolve(_ sender: NetService) {
+        sender.resolve(withTimeout: 3)
+    }
+    
+    func netServiceDidResolveAddress(_ sender: NetService) {
+        print(sender.addresses as Any)
     }
 }
 
